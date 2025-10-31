@@ -1,32 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Escape the Room</title>
-    <link rel="stylesheet" href="es.css">
+  <meta charset="UTF-8">
+  <title>World Countries Data</title>
+  <link rel="stylesheet" href="index.css">
 </head>
 <body>
-  <div class="container">
-    <h1>🏃‍♀️ Escape the Room</h1>
-    <p class="story">You're locked in. Solve this to get out!</p>
-
-    <div class="puzzle">
-      <h2>Puzzle 1</h2>
-      <p>Hint: It's a word with numbers - the word is 'open' and the number is square of 11</p>
-      <input type="text" id="password" placeholder="Enter secret password" />
-      <button onclick="checkPassword()">Unlock</button>
+  <header>
+    <h1>World Countries Data</h1>
+    <p id="total">Currently, we have <span id="count">0</span> countries</p>
+    <input type="text" id="search" placeholder="Search countries by name, city and languages" />
+    <div class="filters">
+      <button onclick="sortBy('name')">NAME</button>
+      <button onclick="sortBy('capital')">CAPITAL</button>
+      <button onclick="sortBy('population')">POPULATION</button>
+      <button onclick="showChart()">📊</button>
     </div>
-    <div class="puzzle">
-      <h2>Puzzle 2</h2>
-      <p>What's 3 * 7 + 1?</p>
-      <input type="text" id="mathAnswer" placeholder="Enter your answer" />
-      <button onclick="solveMathRiddle()">Submit</button>
-    </div>
+  </header>
+    <div id="chartPanel">
+    <canvas id="countryChart"></canvas>
+    <button id="closeChart">Close ✕</button>
     </div>
 
-    <div id="messageBox" class="message-box"></div>
-  </div> 
-  <script src="es.js"></script>
+  <main id="countries"></main>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
