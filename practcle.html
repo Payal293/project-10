@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>World Countries Data</title>
+</head>
+<body>
+<div class="container">
+  <div>One</div>
+  <div>Two</div>
+  <div>Three</div>
+</div>
+
+<div class="grid-container">
+  <div>1</div>
+  <div>2</div>
+  <div>3</div>
+</div>
+<img src="" style="float: right;">
+<p>This text will flow around the image.</p>
+
+</body>
+<style>
+    .container {
+  display: flex;
+}
+.grid-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr; /* 3 equal columns */
+}
+div{
+    transition:background-color 0.5s ease;
+}
+div:hover{
+    background-color: aquamarine;
+}
+</style>
+</html>

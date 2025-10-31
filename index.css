@@ -1,0 +1,111 @@
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: #f5f5f5;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  background: linear-gradient(90deg, #FF9933, white, #138808);
+  padding: 30px 20px;
+  color: #000;
+  text-align: center;
+}
+
+input {
+  width: 60%;
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 25px;
+  border: 2px solid #138808;
+  margin-top: 20px;
+}
+
+.filters {
+  margin: 20px 0;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.filters button {
+  background: #138808;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 30px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+
+.filters button:hover {
+  background: #0f6600;
+}
+
+#countries {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  padding: 20px;
+}
+
+.country-card {
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  width: 150px;
+  padding: 15px;
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+}
+
+.country-card:hover {
+  transform: scale(1.03);
+}
+
+.country-card img {
+  width: 100%;
+  height: 130px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.country-card h3 {
+  margin: 10px 0 5px;
+}
+
+.country-card p {
+  margin: 5px 0;
+}
+#chartPanel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: #fff;
+  border-bottom: 4px solid #138808;
+  padding: 20px;
+  display: none;
+  z-index: 1000;
+}
+
+#countryChart {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+#closeChart {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  background: #FF9933;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
