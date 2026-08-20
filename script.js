@@ -1,11 +1,41 @@
 let countriesData = [];
 let chart;
 
+const apiUrl = '/.netlify/functions/countries';
+
+function normalizeCountry(country) {
+  return {
+    name: { common: country.name?.common || country.name || 'Unknown country' },
+    capital: Array.isArray(country.capital) ? country.capital : [],
+    population: Number(country.population) || 0,
+    flags: country.flags || {},
+    languages: country.languages || {},
+    region: country.region || ''
+  };
+}
+
 async function loadData() {
-  const res = await fetch('https://restcountries.com/v3.1/all?fields=name,capital,population,flags,languages');
-  countriesData = await res.json();
-  document.getElementById('count').textContent = countriesData.length;
-  displayCountries(countriesData);
+  const container = document.getElementById('countries');
+  container.textContent = 'Loading countries...';
+
+  try {
+    const res = await fetch(apiUrl);
+    if (!res.ok) {
+      throw new Error(`Country API returned ${res.status}`);
+    }
+
+    const data = await res.json();
+    if (!Array.isArray(data)) {
+      throw new Error('Country API returned an invalid response');
+    }
+
+    countriesData = data.map(normalizeCountry);
+    document.getElementById('count').textContent = countriesData.length;
+    displayCountries(countriesData);
+  } catch (error) {
+    console.error('Unable to load country data:', error);
+    container.textContent = 'Unable to load country data. Please refresh and try again.';
+  }
 }
 
 
@@ -22,7 +52,7 @@ function displayCountries(data) {
       <p><strong>Population:</strong> ${c.population.toLocaleString()}</p>
       <p><strong>Languages:</strong> ${Object.values(c.languages || {}).join(', ')}</p>
     `;
-    div.addEventListener('click', () => openChart(c)); // 🔗 chart trigger
+    div.addEventListener('click', () => openChart(c));
     container.appendChild(div);
   });
 }
@@ -86,6 +116,12 @@ function openChart(country) {
 
 document.getElementById('closeChart').onclick = () => {
   document.getElementById('chartPanel').style.display = 'none';
+};
+
+window.showChart = () => {
+  if (countriesData.length > 0) {
+    openChart(countriesData[0]);
+  }
 };
 
 loadData();
