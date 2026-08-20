@@ -2,6 +2,12 @@ let countriesData = [];
 let chart;
 
 const apiUrl = '/.netlify/functions/countries';
+const browserApiUrls = {
+  details: 'https://countriesnow.space/api/v0.1/countries/info?returns=flag,capital',
+  regions: 'https://api.first.org/data/v1/countries?limit=300',
+  population: 'https://api.worldbank.org/v2/country/all/indicator/SP.POP.TOTL?format=json&date=2023&per_page=400',
+  metadata: 'https://raw.githubusercontent.com/mledoze/countries/master/countries.json'
+};
 
 function normalizeCountry(country) {
   return {
@@ -14,19 +20,61 @@ function normalizeCountry(country) {
   };
 }
 
+async function loadBrowserData() {
+  const responses = await Promise.all(
+    Object.values(browserApiUrls).map(url => fetch(url))
+  );
+  if (responses.some(response => !response.ok)) {
+    throw new Error('A browser country data source returned an error');
+  }
+
+  const [detailsPayload, regionsPayload, worldBankPayload, metadataPayload] = await Promise.all(
+    responses.map(response => response.json())
+  );
+  if (detailsPayload.error || regionsPayload.status !== 'OK' ||
+    !Array.isArray(worldBankPayload) || worldBankPayload.length < 2 ||
+    !Array.isArray(metadataPayload)) {
+    throw new Error('A browser country data source returned an invalid response');
+  }
+
+  const regionsByName = Object.values(regionsPayload.data || {}).reduce((regions, country) => {
+    regions[country.country.toLowerCase()] = country.region;
+    return regions;
+  }, {});
+  const populationByName = (worldBankPayload[1] || []).reduce((populations, country) => {
+    if (country.value) populations[country.country.value.toLowerCase()] = country.value;
+    return populations;
+  }, {});
+  const metadataByName = metadataPayload.reduce((metadata, country) => {
+    metadata[country.name.common.toLowerCase()] = country;
+    return metadata;
+  }, {});
+
+  return detailsPayload.data.map(country => ({
+    name: { common: country.name },
+    capital: country.capital ? [country.capital] : [],
+    population: populationByName[country.name.toLowerCase()] || 0,
+    flags: { svg: country.flag },
+    languages: metadataByName[country.name.toLowerCase()]?.languages || {},
+    region: regionsByName[country.name.toLowerCase()] ||
+      metadataByName[country.name.toLowerCase()]?.region || ''
+  }));
+}
+
 async function loadData() {
   const container = document.getElementById('countries');
   container.textContent = 'Loading countries...';
 
   try {
-    const res = await fetch(apiUrl);
-    if (!res.ok) {
-      throw new Error(`Country API returned ${res.status}`);
-    }
-
-    const data = await res.json();
-    if (!Array.isArray(data)) {
-      throw new Error('Country API returned an invalid response');
+    let data;
+    try {
+      const res = await fetch(apiUrl);
+      if (!res.ok) throw new Error(`Country API returned ${res.status}`);
+      data = await res.json();
+      if (!Array.isArray(data)) throw new Error('Country API returned an invalid response');
+    } catch (proxyError) {
+      console.warn('Netlify Function unavailable; using browser data sources.', proxyError);
+      data = await loadBrowserData();
     }
 
     countriesData = data.map(normalizeCountry);
